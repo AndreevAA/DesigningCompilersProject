@@ -1,3 +1,5 @@
+from Util import *
+
 # ISA
 ADD = Constant(0)
 SUB = Constant(1)
