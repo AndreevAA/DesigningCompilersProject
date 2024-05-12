@@ -1,0 +1,9 @@
+{
+  "allure": {
+    "results": {
+      "resultsDirectory": "allure-results",
+      "filesSharingPattern": "**/*",
+      "useJSONFiles": true
+    }
+  }
+}

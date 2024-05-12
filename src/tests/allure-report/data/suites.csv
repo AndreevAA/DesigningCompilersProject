@@ -1,0 +1,13 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Wed May 29 23:38:29 MSK 2024","Wed May 29 23:38:29 MSK 2024","0","tests","test_fibonachi","","","","test_multiply_numbers[3-4-12]","
+    Тест для проверки умножения двух чисел.
+    "
+"passed","Wed May 29 23:38:29 MSK 2024","Wed May 29 23:38:29 MSK 2024","0","tests","test_fibonachi","","","","test_add_numbers[3-4-7]","
+    Тест для проверки сложения двух чисел.
+    "
+"passed","Wed May 29 23:38:29 MSK 2024","Wed May 29 23:38:29 MSK 2024","0","tests","test_fibonachi","","","","test_add_numbers[1-2-3]","
+    Тест для проверки сложения двух чисел.
+    "
+"passed","Wed May 29 23:38:29 MSK 2024","Wed May 29 23:38:29 MSK 2024","0","tests","test_fibonachi","","","","test_multiply_numbers[1-2-2]","
+    Тест для проверки умножения двух чисел.
+    "
