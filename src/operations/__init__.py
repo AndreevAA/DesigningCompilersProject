@@ -1,5 +1,5 @@
 import keywords as OSS
-import global as OSG
+import global_ops as OSG
 
 from constants.constant import *
 from constants.pointer import *
