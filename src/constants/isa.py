@@ -1,4 +1,4 @@
-from Util import *
+from constants.constant import Constant
 
 # ISA
 ADD = Constant(0)
