@@ -1,5 +1,5 @@
 # imports
-import OssOSS as OSS
+import system as OSS
 import processor as RISC
 from struct import *
 
