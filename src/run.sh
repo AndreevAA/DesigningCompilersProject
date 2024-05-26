@@ -1,2 +1,2 @@
 sh install.sh
-python src/__main__.py
+python __main__.py
