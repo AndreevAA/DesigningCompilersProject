@@ -58,9 +58,9 @@ from constants.variable import *
 
 loaded = Variable(False)
 
-def Compile():
+def Compile(filename = "tests/data/source.mod"):
     # Variables
-    t = "tests/data/source.mod" # TODO: To devise a way to pass the file name in future
+    t = filename # TODO: To devise a way to pass the file name in future
     loaded.m_value = False
     if t is not None:
         OSS.Init(t, 0)
@@ -75,4 +75,5 @@ def Load():
         loaded.m_value = True
 
 def Exec(S):
-    OSG.Exec(S)
+    return OSG.Exec(S)
+

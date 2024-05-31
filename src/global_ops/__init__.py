@@ -494,6 +494,7 @@ def Load():
         INC(i)
         code.m_value[k] = (code.m_value[k] / 0x10000 * 0x10000) + code.m_value[k] + RISC.MEMSIZE.getValue() % 0x10000
     RISC.Load(code.m_value, pc.m_value)
+
     print ("  code loaded")
     RISC.Execute(entry.m_value * 4, "")
 
@@ -502,7 +503,7 @@ def Exec(S):
     while i.m_value < cno.m_value and S.split()[0] != comname.m_value[i.m_value]:
         INC(i)
     if i.m_value < cno.m_value:
-        RISC.Execute(comadr.m_value[i.m_value], S.split()[1:])
+        return RISC.Execute(comadr.m_value[i.m_value], S.split()[1:])
 
 def Decode():
     # Debug

@@ -67,6 +67,9 @@ def Execute(pc0, In):
     R.m_value[31] = 0
     PC.m_value = pc0 / 4
     ScanIndex = 0
+
+    result = ""
+
     while True:
         R.m_value[0] = 0
         nxt = PC.m_value + 1
@@ -101,7 +104,7 @@ def Execute(pc0, In):
             R.m_value[a] = R.m_value[b] >> c
         elif opc == CHK.getValue() or opc == CHKI.getValue():
             if R.m_value[a] < 0 or R.m_value[a] >= c:
-                print ("Trap at {:2}".format(PC.m_value))
+                result += ("Trap at {:2}".format(PC.m_value))
                 break
         elif opc == LDW.getValue():
             R.m_value[a] = M.m_value[(R.m_value[b] + c) / 4]
@@ -149,12 +152,14 @@ def Execute(pc0, In):
             R.m_value[a] = int(In[ScanIndex])
             ScanIndex += 1
         elif opc == WRD.getValue():
-            print (" {:1}".format(R.m_value[c]))
+            result += (" {:1}".format(R.m_value[c]))
         elif opc == WRH.getValue():
-            print (" {:x}".format(R.m_value[c]))
+            result += (" {:x}".format(R.m_value[c]))
         elif opc == WRL.getValue():
-            print ("")
+            result += ("")
         PC.m_value = nxt
+
+    return result
 
 def State():
     print ("PC={:>8}".format(PC.m_value * 4))

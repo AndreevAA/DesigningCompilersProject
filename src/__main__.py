@@ -23,13 +23,50 @@ from constants.isa import *
 
 def main():
     # Test compiler
-    compiler.Compile()
+    compiler.Compile(filename="tests/data/source.mod")
     compiler.Decode()
     compiler.Load()
-    # processor.State()
+
+    # print(compiler.Exec("Divide 9 5"))
+    # print()
+    # print(compiler.Exec("Divide -1 5"))
+    # print()
+    # print(compiler.Exec("Divide 12 9"))
+    # print()
+    # print(compiler.Exec("BinSearch 9 2 3 4 5 6 7 8 9 10 2"))
+    # print()
+    # print(compiler.Exec("Fibonacci 20"), " 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765")
+    # # processor.State()
+
+    print(compiler.Exec("Factorial 2"))
+
 
     # Execute the code
-    compiler.Exec("Multiply 5 5")
+#     print(compiler.Exec("Multiply 0 0"))
+#     print()
+#     print(compiler.Exec("Multiply -1 -1"))
+#     print()
+#     print(compiler.Exec("Multiply 0 -1"))
+#     print()
+#     print(compiler.Exec("Multiply 1000 9999"))
+#     print()
+#     0
+#     0
+#     0
+#
+#
+# ()
+# -1 - 1
+# 0
+# ()
+# 0 - 1
+# 0
+# ()
+# 0
+# 10238976
+# 9999000
+
+print(" 0 40 25" == compiler.Exec("Multiply 5 5"))
 
 
 if __name__ == '__main__':
