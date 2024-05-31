@@ -518,11 +518,11 @@ def Decode():
         a = Variable(cd % 0x10000)
         if a.m_value >= 0x8000:
             DEC(a, 0x10000)
-        print (str(4 * i.m_value) + " ")
-        print (str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " ")
-        print (str(cd / 0x200000 % 0x20) + ",")
-        print (str(cd / 0x10000 % 0x20) + ",")
-        print (a.m_value)
+        print (str(4 * i.m_value) + " " + str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " " + str(cd / 0x200000 % 0x20) + "," + str(cd / 0x10000 % 0x20) + "," + str(a.m_value))
+        # print (str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " ")
+        # print (str(cd / 0x200000 % 0x20) + ",")
+        # print (str(cd / 0x10000 % 0x20) + ",")
+        # print (a.m_value)
         #print unpack('h', pack('H', (a.m_value)))[0]
         INC(i)
     print ("reloc")

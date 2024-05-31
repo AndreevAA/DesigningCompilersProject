@@ -23,7 +23,7 @@ from constants.isa import *
 
 def main():
     # Test compiler
-    compiler.Compile(filename="tests/data/source.mod")
+    compiler.Compile(filename="input.mod")
     compiler.Decode()
     compiler.Load()
 
@@ -38,7 +38,7 @@ def main():
     # print(compiler.Exec("Fibonacci 20"), " 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765")
     # # processor.State()
 
-    print(compiler.Exec("Factorial 2"))
+    print(compiler.Exec("SwapElements 4 5 10 15 20"))
 
 
     # Execute the code
