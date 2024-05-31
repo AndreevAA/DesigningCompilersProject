@@ -510,6 +510,8 @@ def Decode():
     #for i in code.m_value:
     #    if i != 0:
     #        print unpack('i', pack('I', (i & 0xffffffff)))[0]
+    res = ""
+
     print ("entry",)
     print (entry.m_value * 4)
     i = Variable(0)
@@ -518,7 +520,11 @@ def Decode():
         a = Variable(cd % 0x10000)
         if a.m_value >= 0x8000:
             DEC(a, 0x10000)
-        print (str(4 * i.m_value) + " " + str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " " + str(cd / 0x200000 % 0x20) + "," + str(cd / 0x10000 % 0x20) + "," + str(a.m_value))
+
+        tmp = str(4 * i.m_value) + " " + str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " " + str(cd / 0x200000 % 0x20) + "," + str(cd / 0x10000 % 0x20) + "," + str(a.m_value)
+        print (tmp)
+
+        res += tmp
         # print (str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " ")
         # print (str(cd / 0x200000 % 0x20) + ",")
         # print (str(cd / 0x10000 % 0x20) + ",")
@@ -531,6 +537,15 @@ def Decode():
         INC(i)
         if i % 16 == 0:
             print ("")
+
+     # Create an executable file in macOS with the current time and date, and write the result to it
+    import datetime
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = "output_executable/output_{}.exe".format(current_time)
+    with open(filename, "w") as f:
+        f.write(res)
+    print("Executable file '{}' created.".format(filename))
+
 
 NEW(boolType)
 boolType.m_value.m_form = BOOLEAN.getValue()
