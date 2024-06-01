@@ -1,72 +1,62 @@
-section .bss
-value1 resq 1
-value2 resq 1
-array  resq 10
+.section .data
+input_format: .string "%d"
+output_format: .string "%d "
 
-section .data
-message db "Enter number: ", 0
-format db "%d", 0
-output db "Result: %d", 10, 0
+.section .bss
+n:  .skip 4
+a:  .skip 40
+b:  .skip 40  
 
-section .text
-global _start
-extern _printf, _scanf, _exit
+.section .text
+.global _start
 
 _start:
-    push rbp
-    mov rbp, rsp
-    sub rsp, 56
+    mov rdi, n       
+    mov rsi, input_format  
+    call scanf
 
-    lea rdi, [message]
-    xor rax, rax
-    call _printf
+    xor ebx, ebx        
 
-    lea rdi, [format]
-    lea rsi, [value1]
-    xor rax, rax          
-    call _scanf
+read_loop:
+    cmp ebx, dword [n]  
+    jge reverse_array  
+    lea rdi, [a + ebx * 4] 
+    mov rsi, input_format  
+    call scanf
+    inc ebx
+    jmp read_loop
 
-    mov rax, [value1]
+reverse_array:
+    xor ebx, ebx        
 
-    lea rsi, [array]
-    mov [rsi], rax
+reverse_loop:
+    cmp ebx, dword [n]
+    jge output_array  
+    mov eax, dword [a + ebx * 4]
+    mov edx, dword [n]
+    sub edx, ebx
+    dec edx
+    mov [b + edx * 4], eax
+    inc ebx
+    jmp reverse_loop
 
-    mov rbx, [rsi]
-    add rbx, 1
-    mov [rsi], rbx
+output_array:
+    xor ebx, ebx        
 
-_loop:
-    lea rdi, [format]
-    lea rsi, [value1]
-    xor rax, rax          
-    call _scanf
+output_loop:
+    cmp ebx, dword [n]
+    jge end_program   
+    mov eax, dword [b + ebx * 4]
+    mov rsi, eax
+    mov rdi, output_format
+    call printf
+    inc ebx
+    jmp output_loop
 
-    mov rax, [value1]
-    imul rax, rax, 4
-    add rbx, rax
-    mov [rsi], rbx
+end_program:
+    mov eax, 0x2000001  
+    xor edi, edi        
+    syscall
 
-    mov rax, [rsi]
-    cmp rax, 10
-    jl _loop
-
-_end_loop:
-    lea rsi, [array]
-_print_loop:
-    mov rax, [rsi]
-    test rax, rax
-    je _end_print_loop
-
-    lea rdi, [output]
-    mov rsi, rax
-    xor rax, rax         
-    call _printf
-
-    add rsi, 8
-    jmp _print_loop
-
-_end_print_loop:
-    mov rsp, rbp
-    pop rbp
-    mov rdi, 0
-    call _exit
+.extern printf
+.extern scanf
