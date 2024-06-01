@@ -38,7 +38,7 @@ def main():
     # print(compiler.Exec("Fibonacci 20"), " 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765")
     # # processor.State()
 
-    print(compiler.Exec("SwapElements 4 5 10 15 20"))
+    print(compiler.Exec("ReverseArray 5 1 2 3 4 5"))
 
 
     # Execute the code
