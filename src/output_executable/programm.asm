@@ -38,7 +38,7 @@ reverse_done:
     mov eax, 4
     mov ebx, 1
     mov ecx, arr
-    mov edx, 256
+    mov edx, [size]
     int 0x80
 
     mov eax, 1
