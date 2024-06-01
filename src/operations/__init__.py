@@ -1,6 +1,8 @@
 import keywords as OSS
 import global_ops as OSG
 
+from antlr4 import *
+
 from constants.constant import *
 from constants.pointer import *
 from constants.variable import *

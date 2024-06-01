@@ -2,6 +2,8 @@ from constants.constant import *
 from constants.pointer import *
 from constants.variable import *
 
+from antlr4 import *
+
 # Constants
 MEMSIZE = Constant(4096)
 # ISA

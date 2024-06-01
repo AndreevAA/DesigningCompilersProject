@@ -1,3 +1,6 @@
+# from llvmpy import *
+from antlr4 import *
+
 def OpenReader(R, filename, pos): #R is the filehandle, a reference
     R.m_value = open(filename, 'r')
     R.m_value.seek(pos)

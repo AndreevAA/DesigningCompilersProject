@@ -2,6 +2,8 @@ import file_io as Texts
 from constants.constant import Constant
 from constants.variable import Variable
 
+from antlr4 import *
+
 # "constants"
 IDLEN = Constant(16)
 KW = Constant(34)

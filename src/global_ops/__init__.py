@@ -1,4 +1,7 @@
 # imports
+# from llvmpy import *
+from antlr4 import *
+
 import system as OSS
 import processor as RISC
 from struct import *
@@ -524,7 +527,7 @@ def Decode():
         tmp = str(4 * i.m_value) + " " + str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " " + str(cd / 0x200000 % 0x20) + "," + str(cd / 0x10000 % 0x20) + "," + str(a.m_value)
         print (tmp)
 
-        res += tmp
+        res += tmp + "\n"
         # print (str(mnemo.m_value[cd / 0x4000000 % 0x40]) + " ")
         # print (str(cd / 0x200000 % 0x20) + ",")
         # print (str(cd / 0x10000 % 0x20) + ",")
@@ -542,6 +545,10 @@ def Decode():
     import datetime
     current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = "output_executable/output_{}.exe".format(current_time)
+    with open(filename, "w") as f:
+        f.write(res)
+    print("Executable file '{}' created.".format(filename))
+    filename = "output_executable/output_{}.txt".format(current_time)
     with open(filename, "w") as f:
         f.write(res)
     print("Executable file '{}' created.".format(filename))
