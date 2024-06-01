@@ -1,60 +1,75 @@
 .section .data
 input_format: .string "%d"
-output_format: .string "%d\n"
+output_format: .string "%d "
 
 .section .bss
-n:  .space 4
-a:  .space 40
-b:  .space 40  
+.space 400          
 
 .section .text
-.global _start
+.globl _start
 
-_start:
-    mov $0, %rax
-    lea n(%rip), %rdi
-    lea input_format(%rip), %rsi
-    call scanf
+read_int:
+    mov $0, %rax        
+    mov $0, %rdi        
+    lea 8(%rsp), %rsi    
+    mov $4, %rdx        
+    syscall
+    mov $0, %rax        
+    lea 8(%rsp), %rsi    
+    lea 16(%rsp), %rdi    
+    call atoi
+    mov 16(%rsp), %rax    
+    ret
 
-    xor %ebx, %ebx        
-
-read_loop:
-    cmp %ebx, n(%rip)
-    jge reverse_array
-    lea a(,%ebx,4), %rdi
-    lea input_format(%rip), %rsi
-    call scanf
-    inc %ebx
-    jmp read_loop
-
-reverse_array:
-    xor %ebx, %ebx        
-
-reverse_loop:
-    cmp %ebx, n(%rip)
-    jge output_array
-    mov a(,%ebx,4), %eax
-    mov n(%rip), %edx
-    sub %ebx, %edx
-    dec %edx
-    mov %eax, b(,%edx,4)
-    inc %ebx
-    jmp reverse_loop
-
-output_array:
-    xor %ebx, %ebx        
-
-output_loop:
-    cmp %ebx, n(%rip)
-    jge end_program
-    mov b(,%ebx,4), %esi
-    lea output_format(%rip), %rdi
+write_int:
+    lea 12(%rsp), %rsi 
+    lea output_format(%rip), %rdi 
     mov $0, %rax
     call printf
-    inc %ebx
+    ret
+
+_start:
+    call read_int
+    mov %rax, %rcx    
+
+    mov %rsp, %rbx
+    sub $400, %rsp    
+
+input_loop:
+    cmp %rax, %rcx
+    je reverse_array    
+    call read_int
+    mov %rax, (%rsp,%rax,4) 
+    inc %rax
+    jmp input_loop
+
+reverse_array:
+    xor %rax, %rax 
+    lea -4(%rsp,%rcx,4), %rbx 
+reverse_loop:
+    cmp %rax, %rbx
+    jge print_array 
+    mov (%rsp,%rax,4), %rdx 
+    mov (%rbx), %rdi
+    mov %rdi, (%rsp,%rax,4)
+    mov %rdx, (%rbx)
+    add $4, %rax
+    sub $4, %rbx
+    jmp reverse_loop
+
+print_array:
+    xor %rax, %rax  
+    mov %rcx, %rdi 
+
+output_loop:
+    cmp %rax, %rdi
+    je end_program  
+    mov (%rbx,%rax,4), %rsi 
+    call write_int
+    inc %rax
     jmp output_loop
 
 end_program:
     mov $60, %rax  
-    xor %edi, %edi        
+    xor %edi, %edi
     syscall
