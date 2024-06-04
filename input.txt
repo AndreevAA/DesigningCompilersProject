@@ -1,34 +1,33 @@
-(* Tests the modules INC, DEC, READINT
-Expected Output:
-	6 
-	5 
-	10 
-	13 
-	96.00000000 
-*)
+(* Tests recursion using fibonacci function.
+Expected output: day2 th fibonacci number *)
 
-MODULE xyz; 
+MODULE input; 
 IMPORT Out, In;
-VAR a,day2:INTEGER; day3:REAL;j:CHAR;
-CONST al=2;
+VAR day2:INTEGER; day3:REAL;
 
+PROCEDURE fib(n:INTEGER):INTEGER;
+
+	VAR a, b:INTEGER;
+BEGIN
+	(*Out.Int(n);*)
+	IF(n>2)
+	THEN
+		a := fib(n-1);
+		b := fib(n-2);
+		RETURN a+b;
+	ELSE
+		a := 1;
+		RETURN 1;
+	END;
+END fib;
 
 BEGIN
 
-	day2 := 5;
-	INC(day2);
+	Out.String("Please enter a positive integer: ");
+	READINT(day2);
+	
+	day2 := fib(day2);
+	
 	Out.Int(day2);
 
-	DEC(day2);
-	Out.Int(day2);
-
-	INC(day2, 5);
-	Out.Int(day2);
-
-	DEC(day2, -3);
-	Out.Int(day2);
-
-	INC(day3, -96);
-	Out.Real(ABS(day3));
-
-END xyz.
+END input.
