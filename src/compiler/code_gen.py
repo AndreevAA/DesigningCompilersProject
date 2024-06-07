@@ -1,4 +1,4 @@
-from Phase1 import *
+from phase import *
 if(userChoice2=="y"):
 	debug5 = True
 else:

@@ -23,9 +23,9 @@ from constants.isa import *
 
 def main():
     # Test compiler
-    compiler.Compile(filename="input.mod")
-    compiler.Decode()
-    compiler.Load()
+    # compiler.Compile(filename="input.mod")
+    # compiler.Decode()
+    # compiler.Load()
 
     # print(compiler.Exec("Divide 9 5"))
     # print()
@@ -38,8 +38,10 @@ def main():
     # print(compiler.Exec("Fibonacci 20"), " 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597 2584 4181 6765")
     # # processor.State()
 
-    print(compiler.Exec("ReverseArray 5 1 2 3 4 5"))
+    # print("5 1 2 3 4 5")
+    # print(compiler.Exec("ReverseArray 5 1 2 3 4 5"))
 
+    compiler.execute_new()
 
     # Execute the code
 #     print(compiler.Exec("Multiply 0 0"))

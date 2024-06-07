@@ -1,0 +1,63 @@
+(* Tests array handling. Assignment to an array and using the values filled.
+Expected output: sum of squares of first nine natural numbers. *)
+
+MODULE input; 
+IMPORT Out, In;
+VAR size:INTEGER;
+VAR a,day2:INTEGER; day3:REAL; f:CHAR; arr:ARRAY 100 OF INTEGER;
+VAR tmp: INTEGER;
+VAR i:INTEGER;
+VAR j: INTEGER;
+VAR first, second: INTEGER;
+CONST al=2;
+VAR kpermut: INTEGER;
+
+BEGIN
+
+Out.String("TEST BUBBLE SORT");
+
+Out.String("Array size and elems: ");
+
+READINT(size);
+
+FOR a:= 0 TO 100 - 1
+DO
+	arr[a] := 999999;
+END;
+
+FOR a:= 0 TO size - 1
+DO
+	READINT(tmp);
+	arr[a] := tmp;
+END;
+
+kpermut := 100;
+
+WHILE (kpermut > 0)
+DO
+	j := size - 1;
+	kpermut := 0;
+	FOR i:= 1 TO size - 1
+	DO
+		first := arr[i - 1];
+		second := arr[i];
+
+		IF (first > second)
+		THEN
+			arr[i - 1] := second;
+			arr[i] := first;
+			kpermut := kpermut + 1;
+		END;
+	END;
+END;
+
+Out.String("");
+Out.String("Result array:");
+
+FOR i:= 0 TO size - 1
+DO
+	tmp := arr[i];
+	Out.Int(tmp);
+END;
+
+END input.

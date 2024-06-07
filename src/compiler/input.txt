@@ -1,0 +1,47 @@
+(* Tests array handling. Assignment to an array and using the values filled.
+Expected output: sum of squares of first nine natural numbers. *)
+
+MODULE input; 
+IMPORT Out, In;
+VAR size:INTEGER;
+VAR a,day2:INTEGER; day3:REAL; f:CHAR; arr:ARRAY 100 OF INTEGER;
+VAR tmp: INTEGER;
+VAR i:INTEGER;
+VAR res:ARRAY 100 OF INTEGER;
+VAR j: INTEGER;
+CONST al=2;
+
+BEGIN
+
+Out.String("TEST REVERSE ARRAY\nArray size: ")
+
+READINT(size);
+
+Out.String("    ")
+Out.String("Input array elems div enter:")
+
+FOR a:= 0 TO size - 1
+DO
+	READINT(tmp);
+	arr[a] := tmp;
+END;
+
+j := size - 1;
+FOR i:= 0 TO size - 1
+DO
+	tmp := arr[i];
+	res[j] := tmp;
+	j := j - 1;
+END;
+
+
+Out.String("")
+Out.String("Result array:")
+
+FOR i:= 0 TO size - 1
+DO
+	tmp := res[i];
+	Out.Int(tmp);
+END;
+
+END input.

@@ -12,6 +12,7 @@ import global_ops as OSG
 from constants.constant import *
 from constants.pointer import *
 from constants.variable import *
+# from code_gen import *
 #
 # # Test compiler
 # OssCompiler.Compile()
