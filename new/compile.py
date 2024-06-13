@@ -41,6 +41,10 @@ class BubbleSortCompiler(OberonListener):
         self.variables[var_name] = var_value
 
     def evaluateExpression(self, ctx: OberonParser.DesignatorContext):
+        if isinstance(ctx, OberonParser.NumberContext):
+            return int(ctx.getText())  # Преобразование числового контекста в целое число
+        elif isinstance(ctx, OberonParser.DesignatorContext):
+            return self.evaluateDesignator(ctx)  # Обработка контекста Designator
         if ctx.qualifiedIdent():
             return self.getQualifiedIdentifierValue(ctx.qualifiedIdent())
         elif ctx.designator():
