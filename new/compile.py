@@ -18,7 +18,7 @@ class BubbleSortCompiler(OberonListener):
 
     def enterStatement(self, ctx: OberonParser.StatementContext):
         # Handle Oberon statements, including bubble sort
-        if ctx.sort_statement():
+        if ctx.forStatement():
             self.bubbleSort()
 
     def bubbleSort(self):
