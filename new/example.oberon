@@ -1,0 +1,9 @@
+MODULE PrintExample;
+
+IMPORT Out;
+
+BEGIN
+  Out.String("Hello!"); 
+  Out.Ln;
+  RETURN ;
+END PrintExample.
