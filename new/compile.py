@@ -38,20 +38,34 @@ class BubbleSortCompiler(OberonListener):
 
 # Example Oberon program with bubble sort
 sample_code = """
-MODULE hello;
+MODULE BubbleSort;
 VAR
-    arr: ARRAY 3 OF INTEGER;
-    n, k: INTEGER;
+    numbers: ARRAY 5 OF INTEGER;
+    i, j, temp: INTEGER;
 
 BEGIN
-    arr[0] := 1;
-    arr[1] := 2;
-    arr[2] := 3;
-    k := 2;
-    n := arr[0] + arr[1] * arr[2] DIV (k + 1);
+    numbers[0] := 4;
+    numbers[1] := 2;
+    numbers[2] := 7;
+    numbers[3] := 1;
+    numbers[4] := 5;
 
-    RETURN n;
-END hello.
+    FOR i := 0 TO 4 DO
+        FOR j := 0 TO 4 - i DO
+            IF numbers[j] > numbers[j + 1] THEN
+                temp := numbers[j];
+                numbers[j] := numbers[j + 1];
+                numbers[j + 1] := temp;
+            END;
+        END;
+    END;
+
+    FOR i := 0 TO 4 DO
+        WriteInt(numbers[i]);
+        WriteString(" ");
+    END;
+
+END BubbleSort.
 """
 
 compiler = BubbleSortCompiler()
