@@ -73,7 +73,6 @@ class OberonCompiler:
             self.module.add_global(const_type, const.name, initializer=const.value)
 
     def visitTypes(self, types):
-        # В Oberon типы могут быть сложными, здесь простая реализация
         for typ in types:
             if isinstance(typ, ArrayType):
                 array_type = ir.ArrayType(self.getType(typ.element_type), typ.size)
@@ -82,6 +81,17 @@ class OberonCompiler:
                 fields = [(self.getType(f.type), f.name) for f in typ.fields]
                 record_type = self.context.get_identified_type(typ.name)
                 record_type.set_body(*fields)
+
+    # def visitTypes(self, types):
+    #     # В Oberon типы могут быть сложными, здесь простая реализация
+    #     for typ in types:
+    #         if isinstance(typ, ArrayType):
+    #             array_type = ir.ArrayType(self.getType(typ.element_type), typ.size)
+    #             self.module.context.get_identified_type(typ.name).set_body(array_type)
+    #         elif isinstance(typ, RecordType):
+    #             fields = [(self.getType(f.type), f.name) for f in typ.fields]
+    #             record_type = self.context.get_identified_type(typ.name)
+    #             record_type.set_body(*fields)
 
     def visitFunction(self, function):
         func_type = ir.FunctionType(self.getType(function.returnType),
@@ -110,6 +120,44 @@ class OberonCompiler:
         elif isinstance(statement, ReturnStatement):
             ret_value = self.builder.load(self.getType(statement.value.type), name=statement.value)
             self.builder.ret(ret_value)
+        elif isinstance(statement, ForStatement):
+            # Обработка цикла for
+            # Пример реализации:
+            start_value = self.builder.load(ir.IntType(32), name=statement.start)
+            end_value = self.builder.load(ir.IntType(32), name=statement.end)
+            step_value = self.builder.load(ir.IntType(32), name=statement.step)
+            variable = self.builder.alloca(ir.IntType(32), name=statement.var_name)
+            self.builder.store(start_value, variable)
+            loop_block = self.builder.function.append_basic_block("for.loop")
+            end_block = self.builder.function.append_basic_block("for.end")
+            self.builder.branch(loop_block)
+            self.builder.position_at_start(loop_block)
+            # Добавьте блок кода для тела цикла
+            # Увеличение переменной цикла и проверка условия завершения
+            self.builder.store(self.builder.add(self.builder.load(ir.IntType(32), variable), step_value), variable)
+            self.builder.cbranch(
+                self.builder.icmp_unsigned('<', self.builder.load(ir.IntType(32), variable), end_value),
+                loop_block, end_block)
+            self.builder.position_at_end(end_block)
+        elif isinstance(statement, WhileStatement):
+            # Обработка цикла while
+            # Пример реализации:
+            loop_block = self.builder.function.append_basic_block("while.loop")
+            body_block = self.builder.function.append_basic_block("while.body")
+            end_block = self.builder.function.append_basic_block("while.end")
+            self.builder.branch(loop_block)
+            self.builder.position_at_start(loop_block)
+            # Добавьте условие для цикла while
+            condition = self.builder.icmp_unsigned('<', self.builder.load(ir.IntType(32), name=statement.condition),
+                                                   ir.Constant(ir.IntType(1), 1))
+            self.builder.cbranch(condition, body_block, end_block)
+            self.builder.position_at_start(body_block)
+            # Добавьте блок кода для тела цикла while
+            # Возможно, понадобится добавить условие выхода из цикла
+            self.builder.branch(loop_block)
+            self.builder.position_at_end(end_block)
+        else:
+            raise NotImplementedError("Statement type not implemented: " + type(statement).__name__)
         else:
             raise NotImplementedError("Statement type not implemented: " + type(statement).__name__)
 
