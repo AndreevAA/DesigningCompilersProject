@@ -3,6 +3,7 @@ from OberonLexer import OberonLexer
 from OberonParser import OberonParser
 from OberonListener import OberonListener
 
+
 class BubbleSortCompiler(OberonListener):
     def __init__(self):
         self.variables = {}
@@ -11,32 +12,31 @@ class BubbleSortCompiler(OberonListener):
         lexer = OberonLexer(InputStream(code))
         stream = CommonTokenStream(lexer)
         parser = OberonParser(stream)
-        tree = parser.program()
+        tree = parser.module()
         walker = ParseTreeWalker()
         walker.walk(self, tree)
 
-    def enterStatement(self, ctx:OberonParser.StatementContext):
-        # Обработка операторов языка Oberon, включая сортировку пузырьком
+    def enterStatement(self, ctx: OberonParser.StatementContext):
+        # Handle Oberon statements, including bubble sort
         if ctx.sort_statement():
-            # Вызов функции для сортировки пузырьком
             self.bubbleSort()
 
     def bubbleSort(self):
-        # Реализация сортировки пузырьком
         if 'numbers' in self.variables:
             numbers = self.variables['numbers']
             n = len(numbers)
             for i in range(n):
-                for j in range(0, n-i-1):
-                    if numbers[j] > numbers[j+1]:
-                        numbers[j], numbers[j+1] = numbers[j+1], numbers[j]
+                for j in range(0, n - i - 1):
+                    if numbers[j] > numbers[j + 1]:
+                        numbers[j], numbers[j + 1] = numbers[j + 1], numbers[j]
 
-    def exitAssignment(self, ctx:OberonParser.AssignmentContext):
+    def exitAssignment(self, ctx: OberonParser.AssignmentContext):
         var_name = ctx.IDENT().getText()
         var_value = int(ctx.expression().getText())
         self.variables[var_name] = var_value
 
-# Пример программы на языке Oberon с сортировкой пузырьком
+
+# Example Oberon program with bubble sort
 sample_code = """
 MODULE BubbleSort;
 VAR
