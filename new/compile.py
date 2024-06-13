@@ -31,7 +31,7 @@ class BubbleSortCompiler(OberonListener):
                         numbers[j], numbers[j + 1] = numbers[j + 1], numbers[j]
 
     def exitAssignment(self, ctx: OberonParser.AssignmentContext):
-        var_name = ctx.IDENT().getText()
+        var_name = ctx.getChild(0).getText()
         var_value = int(ctx.expression().getText())
         self.variables[var_name] = var_value
 
