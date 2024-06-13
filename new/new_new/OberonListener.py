@@ -8,15 +8,6 @@ else:
 # This class defines a complete listener for a parse tree produced by OberonParser.
 class OberonListener(ParseTreeListener):
 
-    # Enter a parse tree produced by OberonParser#importDeclaration.
-    def enterImportDeclaration(self, ctx:OberonParser.ImportDeclarationContext):
-        pass
-
-    # Exit a parse tree produced by OberonParser#importDeclaration.
-    def exitImportDeclaration(self, ctx:OberonParser.ImportDeclarationContext):
-        pass
-
-
     # Enter a parse tree produced by OberonParser#ident.
     def enterIdent(self, ctx:OberonParser.IdentContext):
         pass

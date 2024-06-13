@@ -32,31 +32,18 @@ class BubbleSortCompiler(OberonListener):
 
     def exitAssignment(self, ctx: OberonParser.AssignmentContext):
         var_name = ctx.getChild(0).getText()
-        if ctx.expression().number():
-            var_value = int(ctx.expression().number().getText())
-        elif ctx.expression().designator():
-            var_value = self.evaluateExpression(ctx.expression().designator())
-        else:
-            var_value = None # Handle other cases as needed
+        var_value = self.evaluateExpression(ctx.expression())  # Вызов метода для оценки выражения
         self.variables[var_name] = var_value
 
-    def evaluateExpression(self, ctx: OberonParser.DesignatorContext):
+    def evaluateExpression(self, ctx):
         if isinstance(ctx, OberonParser.NumberContext):
-            return int(ctx.getText())  # Преобразование числового контекста в целое число
+            return int(ctx.getText())
         elif isinstance(ctx, OberonParser.DesignatorContext):
-            return self.evaluateDesignator(ctx)  # Обработка контекста Designator
-        if ctx.qualifiedIdent():
-            return self.getQualifiedIdentifierValue(ctx.qualifiedIdent())
-        elif ctx.designator():
-            return self.evaluateExpression(ctx.designator())
-        elif ctx.IDENT():
-            var_name = ctx.IDENT().getText()
-            if var_name in self.variables:
-                return self.variables[var_name]
-            else:
-                print(f"Error: Variable {var_name} not found.")
-        elif ctx.arrayIndex():
-            return self.evaluateArrayIndex(ctx)
+            return self.evaluateDesignator(ctx)
+        elif isinstance(ctx, OberonParser.ExpressionContext):
+            return self.evaluateExpression(ctx.expression())
+        else:
+            return None  # Обработка других случаев по мере необходимости
 
     def evaluateArrayIndex(self, ctx):
         array_name = ctx.qualident().getText()

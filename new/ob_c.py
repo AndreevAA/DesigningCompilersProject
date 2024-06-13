@@ -7,21 +7,7 @@ import sys
 import re
 import subprocess
 import os
-import operator
-import inspect
 
-ops = {
-    '+': operator.add,
-    '-': operator.sub,
-    '*': operator.mul,
-    '/': operator.floordiv,
-    '<': operator.lt,
-    '>': operator.gt,
-    '<=': operator.le,
-    '>=': operator.ge,
-    '==': operator.eq,
-    '!=': operator.ne,
-}
 
 class OberonToLLVM(OberonListener):
     def __init__(self):
@@ -46,15 +32,13 @@ class OberonToLLVM(OberonListener):
         self.builder = ir.IRBuilder(block)
 
     def exitModule(self, ctx: OberonParser.ModuleContext):
-        # return the value of n
-        if 'n' in self.symbols:
-            self.builder.ret(self.builder.load(self.symbols['n']))
-        else:
-            self.builder.ret(ir.Constant(ir.IntType(32), 0))
+        c_str = lambda s: self.builder.bitcast(self.declare_global_string(s), ir.IntType(8).as_pointer())
+
+        self.builder.ret(self.builder.load(self.symbols['n']))
 
     def declare_global_string(self, string_value):
         string_type = ir.ArrayType(ir.IntType(8), len(string_value) + 1)
-        global_string = ir.GlobalVariable(self.module, string_type, name=f".str{len(self.symbols)}")
+        global_string = ir.GlobalVariable(self.module, string_type, name="str")
         global_string.initializer = ir.Constant(string_type, bytearray(string_value.encode("utf8") + b'\00'))
         global_string.global_constant = True
         return global_string
@@ -111,90 +95,55 @@ class OberonToLLVM(OberonListener):
             self.builder.store(llvm_value, var)
 
     def evaluate_expression(self, expression):
-        if expression.isdigit():
+        try:
             return ir.Constant(ir.IntType(32), int(expression))
-
-        if expression in self.symbols:
-            return self.builder.load(self.symbols[expression])
-
-        for op in ('+', '-', '*', '/', '<', '>', '<=', '>=', '==', '!='):
-            if op in expression:
-                left_expr, right_expr = expression.split(op, 1)
-                left_val = self.evaluate_expression(left_expr.strip())
-                right_val = self.evaluate_expression(right_expr.strip())
-
-                if op == '+':
-                    return self.builder.add(left_val, right_val)
-                elif op == '-':
-                    return self.builder.sub(left_val, right_val)
-                elif op == '*':
-                    return self.builder.mul(left_val, right_val)
-                elif op == '/':
-                    return self.builder.sdiv(left_val, right_val)
-                elif op == '<':
-                    return self.builder.icmp_signed('<', left_val, right_val)
-                elif op == '>':
-                    return self.builder.icmp_signed('>', left_val, right_val)
-                elif op == '<=':
-                    return self.builder.icmp_signed('<=', left_val, right_val)
-                elif op == '>=':
-                    return self.builder.icmp_signed('>=', left_val, right_val)
-                elif op == '==':
-                    return self.builder.icmp_signed('==', left_val, right_val)
-                elif op == '!=':
-                    return self.builder.icmp_signed('!=', left_val, right_val)
-
-        raise ValueError(f"Unable to evaluate expression: {expression}")
+        except ValueError:
+            if '[' in expression and ']' in expression:
+                var_name, index_str = expression[:-1].split('[')
+                index = self.evaluate_expression(index_str)
+                var = self.symbols.get(var_name.strip(), None)
+                if var is None:
+                    print(f"Variable {var_name} not declared!")
+                    sys.exit(1)
+                return self.builder.load(self.builder.gep(var, [ir.Constant(ir.IntType(32), 0), index]))
+            else:
+                var = self.symbols.get(expression.strip(), None)
+                if var is None:
+                    print(f"Variable {expression} not declared!")
+                    sys.exit(1)
+                return self.builder.load(var)
 
     def enterWhileStatement(self, ctx: OberonParser.WhileStatementContext):
+        while_condition = ctx.expression().getText()
+        llvm_condition = self.evaluate_expression(while_condition)
+
         loop_entry = self.builder.append_basic_block('loop_entry')
         loop_body = self.builder.append_basic_block('loop_body')
         loop_exit = self.builder.append_basic_block('loop_exit')
 
         self.builder.branch(loop_entry)
+
+        # Loop condition evaluation
         self.builder.position_at_end(loop_entry)
+        condition = self.builder.icmp_signed('<', llvm_condition, ir.Constant(ir.IntType(32), 5))
+        self.builder.cbranch(condition, loop_body, loop_exit)
 
-        while_expr_ctx = ctx.expression(0)
-        while_condition = self.evaluate_expression(while_expr_ctx.getText())
-        self.builder.cbranch(while_condition, loop_body, loop_exit)
-
+        # Loop body
         self.builder.position_at_end(loop_body)
-        self.enterStatementSequence(ctx.statementSequence())
+
+        # Visit loop body statements
+        for statement in ctx.statementSequence().statement():
+            self.enterStatement(statement)
+
+        # Reevaluate condition
         self.builder.branch(loop_entry)
 
+        # Position builder at loop exit
         self.builder.position_at_end(loop_exit)
 
-    def enterStatementSequence(self, ctx):
-        # ctx is the context that should represent a list of statements
-        for statement in ctx.statement():
-            if isinstance(statement, OberonParser.AssignmentContext):
-                self.enterAssignmentStatement(statement)
-            elif isinstance(statement, OberonParser.IfStatementContext):
-                self.enterIfStatement(statement)
-            elif isinstance(statement, OberonParser.WhileStatementContext):
-                self.enterWhileStatement(statement)
-            elif isinstance(statement, OberonParser.StatementContext):
-                self.enterStatement(statement)
-            else:
-                print(f"Unknown statement type: {type(statement)}")
-
-    # Placeholder for enterAssignmentStatement
-    def enterAssignmentStatement(self, ctx):
-        pass
-
-    # Placeholder for enterIfStatement
-    def enterIfStatement(self, ctx):
-        pass
-
-    # Placeholder for enterProcedureCall
-    def enterProcedureCall(self, ctx):
-        pass
-
     def enterStatement(self, ctx: OberonParser.StatementContext):
-        if hasattr(ctx, 'procedureCall'):
-            self.enterProcedureCall(ctx.procedureCall())
-        else:
-            print(f"Unhandled statement type in enterStatement: {type(ctx)}")
+        if ctx.assignment():
+            self.enterAssignment(ctx.assignment())
 
     def enterForStatement(self, ctx: OberonParser.ForStatementContext):
         var_name = ctx.ID().getText()
@@ -218,7 +167,7 @@ def compile_oberon_code(oberon_code):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python oberon_compiler.py <source>")
+        print("Usage: python OberonCompiler.py <source>")
         sys.exit(1)
 
     source_file = sys.argv[1]
@@ -252,8 +201,11 @@ def main():
         f.write(target_machine.emit_object(mod))
 
     # Link the object file to create an executable
-    exe_file = "output"
-    subprocess.run(["gcc", "-o", exe_file, obj_file])
+    exe_file = "output.exe"
+    subprocess.run(["gcc", obj_file, "-o", exe_file, "-lm"], check=True)
+
+    print(f"Executable created: {exe_file}")
+
 
 if __name__ == "__main__":
     main()
