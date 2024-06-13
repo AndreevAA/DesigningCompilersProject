@@ -32,9 +32,49 @@ class BubbleSortCompiler(OberonListener):
 
     def exitAssignment(self, ctx: OberonParser.AssignmentContext):
         var_name = ctx.getChild(0).getText()
-        var_value = int(ctx.expression().getText())
+        if ctx.expression().number():
+            var_value = int(ctx.expression().number().getText())
+        elif ctx.expression().designator():
+            var_value = self.evaluateExpression(ctx.expression().designator())
+        else:
+            var_value = None # Handle other cases as needed
         self.variables[var_name] = var_value
 
+    def evaluateExpression(self, ctx: OberonParser.DesignatorContext):
+        if ctx.qualifiedIdent():
+            return self.getQualifiedIdentifierValue(ctx.qualifiedIdent())
+        elif ctx.designator():
+            return self.evaluateExpression(ctx.designator())
+        elif ctx.IDENT():
+            var_name = ctx.IDENT().getText()
+            if var_name in self.variables:
+                return self.variables[var_name]
+            else:
+                print(f"Error: Variable {var_name} not found.")
+        elif ctx.arrayIndex():
+            return self.evaluateArrayIndex(ctx)
+
+    def evaluateArrayIndex(self, ctx):
+        array_name = ctx.qualident().getText()
+        index = int(ctx.arrayIndex().expression().getText())
+        if array_name in self.arrays:
+            array = self.arrays[array_name]
+            if 0 <= index < len(array):
+                return array[index]
+            else:
+                print(f"Error: Index out of bounds for array {array_name}.")
+        else:
+            print(f"Error: Array {array_name} not found.")
+
+    def getQualifiedIdentifierValue(self, ctx):
+        ident_name = ctx.IDENT().getText()
+        if ident_name in self.variables:
+            return self.variables[ident_name]
+        elif ident_name in self.functions:
+            # You can handle function calls here if needed
+            return None
+
+        return None
 
 # Example Oberon program with bubble sort
 sample_code = """
